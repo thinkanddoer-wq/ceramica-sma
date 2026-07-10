@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cerámica SMA — Azul cobalto hecho a mano</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Jost:ital,wght@0,200;0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+:root{
+  --noche:#141C4D;         /* fondo profundo */
+  --cobalto:#1F2C74;
+  --cobalto-2:#2A3A93;
+  --azul-claro:#5B6FC9;
+  --oro:#D9B66C;
+  --barro:#8A6A52;
+  --crema:#F3EFE3;
+  --panel:#232F7A;
+  --esmalte:#2A3A93;
+  --esmalte-sombra:#18225c;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Jost',sans-serif;
+  background:var(--noche);
+  color:var(--crema);
+  overflow-x:hidden;
+}
+
+/* ═══ CAPA DE FUEGO (aparece con el scroll) ═══ */
+.fuego{
+  position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0;
+  background:
+    radial-gradient(90% 60% at 50% 108%, rgba(255,140,40,.55) 0%, rgba(220,70,20,.35) 35%, transparent 70%),
+    radial-gradient(50% 35% at 30% 112%, rgba(255,190,80,.4) 0%, transparent 65%),
+    radial-gradient(55% 40% at 72% 110%, rgba(200,50,15,.4) 0%, transparent 65%);
+}
+.chispas{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0;transition:opacity .4s}
+.chispa{
+  position:absolute;bottom:-4vh;width:5px;height:5px;border-radius:50%;
+  background:radial-gradient(circle,#FFD98A,#FF8C28 60%,transparent);
+  animation:sube linear infinite;
+}
+@keyframes sube{
+  0%{transform:translateY(0) translateX(0);opacity:0}
+  10%{opacity:.9}
+  100%{transform:translateY(-105vh) translateX(var(--drift,20px));opacity:0}
+}
+
+/* ═══ FONDO TALAVERA (discreto) ═══ */
+.talavera-bg{
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  opacity:.07;
+  background-size:280px 280px;
+  transition:transform 2.5s cubic-bezier(.2,.8,.2,1);
+}
+.azulejo{
+  position:absolute;pointer-events:none;
+  opacity:.10;
+  transition:transform 2.5s cubic-bezier(.2,.8,.2,1);
+}
+.az1{top:6%;left:-4%;width:220px;transform:rotate(-8deg)}
+.az2{top:12%;right:-3%;width:190px;transform:rotate(10deg)}
+.az3{bottom:8%;left:3%;width:200px;transform:rotate(6deg)}
+.az4{bottom:14%;right:-4%;width:230px;transform:rotate(-12deg)}
+@media(max-width:900px){.az1,.az4{display:none}}
+
+/* ═══ NAV ═══ */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:50;
+  display:flex;justify-content:space-between;align-items:center;
+  padding:1.1rem 6vw;
+  color:var(--crema);
+  transition:color .4s;
+  background:rgba(0,0,0,.14);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border-bottom:1px solid rgba(243,239,227,.1);
+}
+.logo{display:flex;align-items:center;gap:.7rem;font-family:'Cormorant Garamond',serif;font-weight:600;font-size:1.2rem}
+.logo-badge{
+  width:40px;height:40px;border-radius:50%;display:grid;place-items:center;
+  border:1.5px solid currentColor;font-size:1.1rem;opacity:.85;
+}
+.logo span{color:var(--oro);font-style:italic;font-weight:400}
+.nav-links{display:flex;gap:2rem;font-size:.82rem;letter-spacing:.1em;text-transform:uppercase}
+.nav-links a{color:currentColor;text-decoration:none;opacity:.75;transition:opacity .25s}
+.nav-links a:hover{opacity:1}
+@media(max-width:720px){.nav-links{display:none}}
+
+/* ═══ HERO ═══ */
+.hero{
+  position:relative;z-index:1;min-height:100vh;
+  display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:3rem;
+  padding:7.5rem 6vw 5rem;
+}
+.eyebrow{
+  display:inline-flex;align-items:center;gap:.6rem;
+  font-size:.72rem;letter-spacing:.3em;text-transform:uppercase;
+  color:var(--oro);margin-bottom:1.3rem;
+}
+.eyebrow::before{content:"";width:34px;height:1px;background:var(--oro)}
+h1{
+  font-family:'Cormorant Garamond',serif;font-weight:300;letter-spacing:.01em;
+  font-size:clamp(2.5rem,4.8vw,4.2rem);line-height:1.08;margin-bottom:1.4rem;
+}
+h1 em{font-style:italic;color:var(--azul-claro)}
+.hero p{max-width:42ch;font-size:1.02rem;font-weight:300;letter-spacing:.02em;line-height:1.75;opacity:.85;margin-bottom:2.4rem}
+
+/* botones 3D */
+.btn{
+  display:inline-block;font-weight:700;font-size:.95rem;
+  padding:1rem 2.3rem;border-radius:999px;border:none;cursor:pointer;text-decoration:none;
+  transition:transform .15s,box-shadow .15s;
+}
+.btn-oro{
+  background:linear-gradient(180deg,#ecd394 0%,var(--oro) 45%,#b08c42 100%);
+  color:#3a2c10;
+  box-shadow:0 6px 0 #7d6128,0 16px 30px rgba(0,0,0,.5),inset 0 2px 3px rgba(255,255,255,.55);
+}
+.btn-oro:hover{transform:translateY(-2px)}
+.btn-oro:active{transform:translateY(4px);box-shadow:0 2px 0 #7d6128,0 8px 14px rgba(0,0,0,.4),inset 0 2px 3px rgba(255,255,255,.55)}
+.btn-linea{
+  margin-left:1rem;background:rgba(243,239,227,.08);color:var(--crema);
+  backdrop-filter:blur(8px);
+  box-shadow:inset 0 0 0 1.5px rgba(243,239,227,.35),0 4px 0 rgba(0,0,0,.3);
+}
+.btn-linea:hover{transform:translateY(-2px);background:rgba(243,239,227,.15)}
+.btn-linea:active{transform:translateY(3px);box-shadow:inset 0 0 0 1.5px rgba(243,239,227,.35),0 1px 0 rgba(0,0,0,.3)}
+
+/* ═══ PANEL INCLINADO CON BOTONES 3D ═══ */
+.panel-stage{perspective:1200px}
+.panel{
+  position:relative;
+  background:linear-gradient(150deg,#2E3E9C 0%,var(--panel) 40%,#1A2560 100%);
+  border-radius:26px;
+  padding:2.6rem 2.4rem;
+  transform:rotateX(8deg) rotateY(-10deg) rotate(2deg);
+  transform-style:preserve-3d;
+  box-shadow:
+    0 50px 90px rgba(0,0,0,.6),
+    0 20px 40px rgba(0,0,0,.4),
+    inset 0 1px 0 rgba(243,239,227,.2);
+  transition:transform .7s cubic-bezier(.2,.8,.2,1);
+}
+.panel:hover{transform:rotateX(3deg) rotateY(-4deg) rotate(1deg)}
+.panel-title{
+  font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:400;
+  font-size:1.05rem;color:rgba(243,239,227,.8);margin-bottom:1.8rem;
+}
+.grid-3d{display:grid;grid-template-columns:repeat(4,1fr);gap:1.4rem 1rem}
+@media(max-width:1100px){.grid-3d{grid-template-columns:repeat(2,1fr)}}
+.item-3d{text-align:center;cursor:pointer}
+.circulo{
+  width:74px;height:74px;border-radius:50%;margin:0 auto .7rem;
+  display:grid;place-items:center;font-size:1.7rem;
+  box-shadow:
+    0 8px 0 rgba(0,0,0,.35),
+    0 18px 26px rgba(0,0,0,.45),
+    inset 0 4px 6px rgba(255,255,255,.4),
+    inset 0 -8px 12px rgba(0,0,0,.3);
+  transition:transform .2s cubic-bezier(.3,1.6,.5,1),box-shadow .2s;
+}
+.item-3d:hover .circulo{transform:translateY(-6px) scale(1.06)}
+.item-3d:active .circulo{
+  transform:translateY(3px);
+  box-shadow:0 2px 0 rgba(0,0,0,.35),0 8px 14px rgba(0,0,0,.4),inset 0 4px 6px rgba(255,255,255,.35),inset 0 -6px 10px rgba(0,0,0,.3);
+}
+.c-oro{background:radial-gradient(circle at 35% 28%,#ecd394,var(--oro) 65%)}
+.c-cobalto{background:radial-gradient(circle at 35% 28%,#4d61c2,var(--cobalto-2) 65%)}
+.c-claro{background:radial-gradient(circle at 35% 28%,#8b9ce0,var(--azul-claro) 65%)}
+.c-barro{background:radial-gradient(circle at 35% 28%,#ab8a6d,var(--barro) 65%)}
+.c-noche{background:radial-gradient(circle at 35% 28%,#2c3a8a,#141C4D 65%)}
+.c-crema{background:radial-gradient(circle at 35% 28%,#fdfaf1,#ddd5bd 65%);color:var(--cobalto)}
+.item-3d strong{display:block;font-size:.88rem;font-weight:700;margin-bottom:.25rem}
+.item-3d span{display:block;font-size:.72rem;line-height:1.45;opacity:.7}
+
+@media(max-width:900px){
+  .hero{grid-template-columns:1fr;text-align:center}
+  .hero p{margin-inline:auto}
+  .panel{transform:rotateX(4deg) rotate(1deg)}
+  .eyebrow{justify-content:center}
+  .eyebrow::before{display:none}
+}
+
+/* ═══ PLATO INTERACTIVO ═══ */
+.seccion{position:relative;z-index:1;padding:6rem 6vw}
+.plato-seccion{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center}
+@media(max-width:900px){.plato-seccion{grid-template-columns:1fr}}
+h2{font-family:'Cormorant Garamond',serif;font-weight:300;letter-spacing:.01em;font-size:clamp(1.9rem,3.4vw,2.9rem);line-height:1.15;margin-bottom:1rem}
+h2 em{font-style:italic;color:var(--oro)}
+.plato-seccion p{opacity:.82;line-height:1.75;margin-bottom:2rem;max-width:46ch}
+
+.plato-stage{display:flex;flex-direction:column;align-items:center;gap:1.8rem}
+.plato-wrap{
+  width:min(400px,78vw);aspect-ratio:1;
+  filter:drop-shadow(0 34px 44px rgba(0,0,0,.55));
+  animation:respira 7s ease-in-out infinite;
+  transition:transform .6s cubic-bezier(.2,.8,.2,1);
+}
+@keyframes respira{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-12px) rotate(1deg)}}
+.glaze,.glaze-dark{transition:fill .8s ease}
+.glaze-name{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.1rem;color:var(--oro);min-height:1.6em;transition:opacity .3s}
+
+.paleta{
+  display:flex;gap:.9rem;align-items:center;flex-wrap:wrap;justify-content:center;
+  padding:.9rem 1.4rem;border-radius:999px;
+  background:rgba(243,239,227,.08);
+  backdrop-filter:blur(14px);
+  box-shadow:inset 0 0 0 1px rgba(243,239,227,.18),0 14px 30px rgba(0,0,0,.35);
+}
+.paleta-label{font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;opacity:.65}
+.swatch{
+  width:40px;height:40px;border-radius:50%;cursor:pointer;border:none;
+  box-shadow:0 5px 0 rgba(0,0,0,.35),inset 0 -7px 10px rgba(0,0,0,.28),inset 0 4px 6px rgba(255,255,255,.45);
+  transition:transform .2s,box-shadow .2s;
+}
+.swatch:hover{transform:translateY(-4px) scale(1.08)}
+.swatch:active{transform:translateY(1px)}
+.swatch.activo,.swatch:focus-visible{outline:3px solid var(--oro);outline-offset:3px}
+
+/* ═══ GALERÍA EDITORIAL (espacios para fotos) ═══ */
+.galeria{
+  display:grid;grid-template-columns:1.15fr .85fr;gap:1.8rem;align-items:start;
+}
+.gal-col{display:flex;flex-direction:column;gap:1.8rem}
+.foto{
+  position:relative;overflow:hidden;
+  background:linear-gradient(155deg,#2E3E9C 0%,#1A2560 55%,#141C4D 100%);
+  box-shadow:0 30px 60px rgba(0,0,0,.45),inset 0 1px 0 rgba(243,239,227,.15);
+  display:grid;place-items:center;
+  transition:transform .5s cubic-bezier(.2,.8,.2,1);
+}
+.foto:hover{transform:translateY(-8px)}
+.foto img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
+.f-arco{border-radius:48% 48% 24px 24px;aspect-ratio:3/4}
+.f-suave{border-radius:32px;aspect-ratio:4/3}
+.f-ovalo{border-radius:50%;aspect-ratio:1;width:78%;margin:0 auto}
+.f-alta{border-radius:120px 120px 28px 28px;aspect-ratio:2.6/4}
+.f-piedra{border-radius:58% 42% 55% 45%/52% 56% 44% 48%;aspect-ratio:1.05}
+.f-capilla{border-radius:50% 50% 20px 20px/68% 68% 20px 20px;aspect-ratio:2.8/4}
+.f-pano{border-radius:200px;aspect-ratio:16/6;margin-top:1.8rem}
+.foto-tag{
+  position:relative;z-index:1;text-align:center;
+  font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300;
+  font-size:1.05rem;color:rgba(243,239,227,.55);letter-spacing:.06em;
+  padding:1rem;
+}
+.foto-cap{
+  margin-top:.9rem;text-align:center;
+  font-size:.72rem;letter-spacing:.3em;text-transform:uppercase;opacity:.55;font-weight:300;
+}
+.gal-offset{margin-top:5rem}
+@media(max-width:900px){
+  .galeria{grid-template-columns:1fr}
+  .gal-offset{margin-top:0}
+}
+.seccion-head{max-width:640px;margin-bottom:3.2rem}
+.seccion-head p{opacity:.8;line-height:1.7}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.6rem}
+.card{
+  border-radius:24px;padding:2rem 1.8rem;
+  background:rgba(255,255,255,.07);
+  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  box-shadow:0 24px 46px rgba(0,0,0,.45),inset 0 1px 0 rgba(243,239,227,.18);
+  transition:transform .35s cubic-bezier(.2,.8,.2,1),box-shadow .35s;
+}
+.card:hover{transform:translateY(-10px) rotate(-.5deg);box-shadow:0 38px 60px rgba(0,0,0,.55),inset 0 1px 0 rgba(243,239,227,.25)}
+.card .circulo{margin:0 0 1.3rem}
+.card h3{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:1.35rem;margin-bottom:.5rem}
+.card p{font-size:.92rem;line-height:1.65;opacity:.78;margin-bottom:1.5rem}
+.card-foot{display:flex;justify-content:space-between;align-items:center}
+.precio{font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--oro)}
+.mini-btn{
+  width:46px;height:46px;border-radius:50%;border:none;cursor:pointer;
+  background:radial-gradient(circle at 35% 28%,#ecd394,var(--oro) 65%);
+  color:#3a2c10;font-size:1.4rem;font-weight:700;
+  box-shadow:0 5px 0 #7d6128,0 12px 20px rgba(0,0,0,.45),inset 0 3px 4px rgba(255,255,255,.55);
+  transition:transform .15s,box-shadow .15s;
+}
+.mini-btn:hover{transform:translateY(-2px)}
+.mini-btn:active{transform:translateY(3px);box-shadow:0 1px 0 #7d6128,0 6px 10px rgba(0,0,0,.4)}
+
+/* ═══ CTA ═══ */
+.cta{text-align:center;padding:7rem 6vw;position:relative;z-index:1}
+.cta-inner{
+  max-width:760px;margin:0 auto;padding:4rem 3rem;border-radius:32px;
+  background:rgba(255,255,255,.07);
+  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+  box-shadow:0 30px 60px rgba(0,0,0,.5),inset 0 1px 0 rgba(243,239,227,.18);
+}
+.cta p{opacity:.82;margin:0 auto 2.4rem;max-width:46ch;line-height:1.7}
+footer{position:relative;z-index:1;text-align:center;padding:2.5rem;font-size:.78rem;opacity:.55;letter-spacing:.06em}
+
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition-duration:.01ms!important}}
+
+/* ═══ ESMALTES: foto izquierda + paleta apilada derecha ═══ */
+.esmalte-grid{
+  display:grid;grid-template-columns:1.15fr .85fr;
+  gap:4rem;align-items:center;max-width:1000px;margin:0 auto;
+}
+.esmalte-der{display:flex;flex-direction:column;align-items:center;gap:2.2rem}
+.paleta-pills{display:flex;flex-direction:column;align-items:center;width:100%}
+.pill{
+  width:min(260px,100%);
+  padding:1.4rem 0 2.7rem;
+  border:none;border-radius:999px;cursor:pointer;
+  background:var(--c);color:var(--tx);
+  font-family:'Jost',sans-serif;font-weight:300;font-size:.95rem;letter-spacing:.18em;
+  text-align:center;
+  margin-top:-2.2rem;
+  box-shadow:0 -16px 28px rgba(0,10,30,.38);
+  transition:transform .25s cubic-bezier(.2,.8,.2,1),box-shadow .25s;
+}
+.pill:first-child{margin-top:0;padding-top:1.9rem;box-shadow:0 10px 24px rgba(0,10,30,.3)}
+.pill:last-child{padding-bottom:1.9rem}
+.pill:hover{transform:translateY(-6px)}
+.pill.activo{box-shadow:0 -16px 28px rgba(0,10,30,.38),inset 0 0 0 2px var(--oro)}
+.pill:focus-visible{outline:2.5px solid var(--oro);outline-offset:2px}
+.esmalte-texto{text-align:center}
+.esmalte-texto p{opacity:.82;line-height:1.8;margin-bottom:1.6rem;max-width:38ch}
+@media(max-width:900px){
+  .esmalte-grid{grid-template-columns:1fr;gap:3rem}
+}
+</style>
+</head>
+<body>
+
+<!-- Fondo talavera: mosaico repetido (muy sutil) -->
+<div class="talavera-bg" id="talaveraBg"></div>
+<div class="fuego" id="fuego"></div>
+<div class="chispas" id="chispas"></div>
+
+<!-- Azulejos grandes decorativos en esquinas -->
+<svg class="azulejo az1" viewBox="0 0 100 100"><g fill="#F3EFE3"><circle cx="50" cy="50" r="10"/><g id="p1"><path d="M50 8c6 10 6 20 0 26-6-6-6-16 0-26z"/></g><use href="#p1" transform="rotate(45 50 50)"/><use href="#p1" transform="rotate(90 50 50)"/><use href="#p1" transform="rotate(135 50 50)"/><use href="#p1" transform="rotate(180 50 50)"/><use href="#p1" transform="rotate(225 50 50)"/><use href="#p1" transform="rotate(270 50 50)"/><use href="#p1" transform="rotate(315 50 50)"/><circle cx="8" cy="8" r="5"/><circle cx="92" cy="8" r="5"/><circle cx="8" cy="92" r="5"/><circle cx="92" cy="92" r="5"/></g></svg>
+
+<svg class="azulejo az2" viewBox="0 0 100 100"><g fill="#5B6FC9"><path d="M50 12c8 12 24 12 26 30 2 16-12 30-26 46-14-16-28-30-26-46 2-18 18-18 26-30z" opacity=".9"/><circle cx="50" cy="42" r="8" fill="#F3EFE3"/><path d="M12 12h14v14H12zM74 12h14v14H74zM12 74h14v14H12zM74 74h14v14H74z" opacity=".6"/></g></svg>
+
+<svg class="azulejo az3" viewBox="0 0 100 100"><g fill="#F3EFE3"><path d="M50 20c4 8 12 10 20 8-2 8 2 16 8 20-6 4-10 12-8 20-8-2-16 2-20 8-4-6-12-10-20-8 2-8-2-16-8-20 6-4 10-12 8-20 8 2 16-2 20-8z" opacity=".85"/><circle cx="50" cy="50" r="9" fill="#2A3A93"/><circle cx="50" cy="50" r="4"/></g></svg>
+
+<svg class="azulejo az4" viewBox="0 0 100 100"><g fill="#F3EFE3"><path d="M30 55c8-18 25-25 42-22-3 10-2 16 4 20-8 3-12 8-13 15-9-4-18-2-24 5-4-7-8-13-9-18z" opacity=".9"/><circle cx="62" cy="42" r="2.5" fill="#2A3A93"/><path d="M20 30c5-2 9-1 12 3-4 3-8 3-12-3z" opacity=".7"/><path d="M15 70h70v4H15z" opacity=".4"/></g></svg>
+
+<nav>
+  <div class="logo"><div class="logo-badge">🏺</div>Cerámica <span>SMA</span></div>
+  <div class="nav-links">
+    <a href="#esmaltes">Esmaltes</a>
+    <a href="#colecciones">Colecciones</a>
+    <a href="#contacto">Contacto</a>
+  </div>
+</nav>
+
+<header class="hero" id="origen" style="grid-template-columns:1fr;text-align:center;color:#3E362C;min-height:100vh">
+  <div style="max-width:600px;margin:0 auto">
+    <div style="font-size:.68rem;letter-spacing:.4em;text-transform:uppercase;opacity:.55;margin-bottom:2.2rem;font-weight:400">Cerámica SMA · El origen</div>
+
+    <svg viewBox="0 0 200 140" style="width:150px;margin:0 auto 2.6rem;display:block" aria-label="Bloque de barro crudo">
+      <path fill="#A99F8D" d="M30 118c-8-24-6-58 6-76 10-14 34-22 62-20 26 2 50 10 60 26 12 20 10 48 2 68-4 10-18 14-40 15-30 2-60 2-78-4-6-2-10-5-12-9z"/>
+      <path fill="#948A77" opacity=".5" d="M42 110c-4-18-2-44 6-58 6-10 20-16 38-16-10 8-16 22-16 40 0 16 4 28 10 36-14 0-28-1-38-2z"/>
+      <path fill="#C4BBA9" opacity=".6" d="M96 30c22 0 42 7 50 20 8 14 8 34 4 50-10 4-24 6-38 6 6-10 9-24 9-38 0-16-9-30-25-38z"/>
+    </svg>
+
+    <h1 style="color:#3E362C;font-weight:300">Aquí empieza <em style="color:#8A6A52">todo</em>.</h1>
+    <p style="margin:0 auto 3rem;color:#3E362C;opacity:.7">Un bloque de barro. Nada más.<br>Baja y mira en qué se convierte.</p>
+
+    <div style="font-size:.7rem;letter-spacing:.35em;text-transform:uppercase;opacity:.5;animation:respira 3s ease-in-out infinite">▼ el proceso</div>
+  </div>
+</header>
+
+<section class="seccion" id="horno" style="text-align:center;min-height:85vh;display:grid;place-items:center;position:relative;overflow:hidden">
+  <div style="position:relative;z-index:2">
+    <div class="eyebrow" style="justify-content:center">La transformación</div>
+    <h2>Aquí el barro pasa por el <em>fuego</em></h2>
+    <p style="opacity:.85;line-height:1.75;max-width:52ch;margin:0 auto 1.5rem">Cada pieza vive esto antes de llegar a tu mesa: el horno la envuelve y el esmalte se vuelve vidrio.</p>
+    <div id="temp" style="font-family:'Cormorant Garamond',serif;font-size:clamp(2.2rem,5vw,3.6rem);color:var(--oro)">20 °C</div>
+  </div>
+
+</section>
+
+<section class="seccion" id="esmaltes">
+  <div class="seccion-head" style="text-align:center;margin-inline:auto">
+    <div class="eyebrow" style="justify-content:center">El esmalte</div>
+    <h2>Elige tu <em>esmalte</em>.</h2>
+  </div>
+
+  <div class="esmalte-grid">
+    <!-- Izquierda: foto -->
+    <div>
+      <div class="foto f-suave" style="aspect-ratio:3.4/4"><span class="foto-tag">foto · pieza con este esmalte</span></div>
+      <div class="foto-cap">Esmaltado a mano · azul cobalto</div>
+    </div>
+
+    <!-- Derecha: paleta apilada + texto -->
+    <div class="esmalte-der">
+      <div class="paleta-pills" role="group" aria-label="Paleta de azules">
+        <button class="pill" style="--c:#001D39;--tx:#BDD8E9">001D39</button>
+        <button class="pill" style="--c:#0A4174;--tx:#BDD8E9">0A4174</button>
+        <button class="pill" style="--c:#49769F;--tx:#F3EFE3">49769F</button>
+        <button class="pill" style="--c:#4E8EA2;--tx:#F3EFE3">4E8EA2</button>
+        <button class="pill" style="--c:#6EA2B3;--tx:#0A2540">6EA2B3</button>
+        <button class="pill" style="--c:#7BBDE8;--tx:#0A2540">7BBDE8</button>
+        <button class="pill" style="--c:#BDD8E9;--tx:#0A2540">BDD8E9</button>
+      </div>
+      <div class="esmalte-texto">
+        <p>Nuestros azules se aplican a mano y reaccionan distinto en cada quema. Toca un tono de la paleta — así se ve tu pieza antes de nacer.</p>
+        <div class="glaze-name" id="glazeName" style="margin-bottom:1.4rem">Esmalte: 0A4174</div>
+        <a href="#contacto" class="btn btn-oro">Pedir con este esmalte</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="seccion" id="piezas">
+  <div class="seccion-head" style="text-align:center;margin-inline:auto">
+    <div class="eyebrow" style="justify-content:center">Las piezas</div>
+    <h2>Formas que ya viven en <em>otras mesas</em></h2>
+  </div>
+  <div class="galeria">
+    <div class="gal-col">
+      <div>
+        <div class="foto f-arco"><span class="foto-tag">foto · pieza principal</span></div>
+        <div class="foto-cap">Jarrón cobalto · torneado a mano</div>
+      </div>
+      <div>
+        <div class="foto f-suave"><span class="foto-tag">foto · detalle del esmalte</span></div>
+        <div class="foto-cap">Textura vidriada · alta temperatura</div>
+      </div>
+      <div>
+        <div class="foto f-piedra"><span class="foto-tag">foto · cuenco</span></div>
+        <div class="foto-cap">Cuenco de forma libre</div>
+      </div>
+    </div>
+    <div class="gal-col gal-offset">
+      <div>
+        <div class="foto f-ovalo"><span class="foto-tag">foto · plato</span></div>
+        <div class="foto-cap">Plato de borde libre</div>
+      </div>
+      <div>
+        <div class="foto f-alta"><span class="foto-tag">foto · botella</span></div>
+        <div class="foto-cap">Botella alta · serie oro</div>
+      </div>
+      <div>
+        <div class="foto f-capilla"><span class="foto-tag">foto · taza</span></div>
+        <div class="foto-cap">Taza · esmalte cobalto</div>
+      </div>
+    </div>
+  </div>
+  <div>
+    <div class="foto f-pano"><span class="foto-tag">foto · la mesa completa</span></div>
+    <div class="foto-cap">La vajilla puesta · San Miguel de Allende</div>
+  </div>
+</section>
+
+<section class="seccion" id="colecciones">
+  <div class="seccion-head">
+    <h2>Colecciones del <em>taller</em></h2>
+    <p>Lotes pequeños, formas orgánicas. Cuando una colección se agota, no se repite igual — el barro nunca es el mismo dos veces.</p>
+  </div>
+  <div class="cards">
+    <div class="card">
+      <div class="circulo c-cobalto">💠</div>
+      <h3>Serie Cobalto</h3>
+      <p>Platos y cuencos en azul profundo con motivos pintados a mano. La serie insignia del taller.</p>
+      <div class="card-foot"><span class="precio">desde $480 MXN</span><button class="mini-btn" aria-label="Agregar Serie Cobalto">+</button></div>
+    </div>
+    <div class="card">
+      <div class="circulo c-crema">🌙</div>
+      <h3>Serie Luna</h3>
+      <p>Blancos crudos con detalles en azul. Contraste limpio para mesas con luz.</p>
+      <div class="card-foot"><span class="precio">desde $450 MXN</span><button class="mini-btn" aria-label="Agregar Serie Luna">+</button></div>
+    </div>
+    <div class="card">
+      <div class="circulo c-oro">✨</div>
+      <h3>Serie Oro</h3>
+      <p>Azul cobalto con filos de oro. Piezas de ocasión, en lotes muy pequeños.</p>
+      <div class="card-foot"><span class="precio">desde $620 MXN</span><button class="mini-btn" aria-label="Agregar Serie Oro">+</button></div>
+    </div>
+  </div>
+</section>
+
+<section class="hero seccion" id="contacto" style="min-height:100vh">
+  <div>
+    <div class="eyebrow">La pieza terminada</div>
+    <h1 style="font-size:clamp(2.2rem,4.2vw,3.6rem)">Y el barro se volvió <em>cobalto</em>.</h1>
+    <p>Esto es lo que sale del horno: piezas únicas, esmaltadas a mano, listas para tu mesa. Escríbenos y arma la tuya.</p>
+    <a href="#" class="btn btn-oro">Escribir por WhatsApp</a>
+    <a href="#esmaltes" class="btn btn-linea">Volver a los esmaltes</a>
+  </div>
+
+  <div class="panel-stage">
+    <div class="panel">
+      <div class="panel-title">Lo que hace única cada pieza</div>
+      <div class="grid-3d">
+        <div class="item-3d"><div class="circulo c-oro">🏺</div><strong>Torneado</strong><span>Formas libres, bordes irregulares</span></div>
+        <div class="item-3d"><div class="circulo c-cobalto">🔥</div><strong>Doble quema</strong><span>Bizcocho y alta a 1240 °C</span></div>
+        <div class="item-3d"><div class="circulo c-claro">💧</div><strong>Cobalto real</strong><span>Pigmento mineral puro</span></div>
+        <div class="item-3d"><div class="circulo c-barro">🤎</div><strong>Barro local</strong><span>Arcillas del Bajío</span></div>
+        <div class="item-3d"><div class="circulo c-noche">🌙</div><strong>Apto alimentos</strong><span>Vidriado seguro</span></div>
+        <div class="item-3d"><div class="circulo c-crema">✋</div><strong>Pieza por pieza</strong><span>Nada en serie</span></div>
+        <div class="item-3d"><div class="circulo c-oro">📦</div><strong>Envío nacional</strong><span>Empaque protegido</span></div>
+        <div class="item-3d"><div class="circulo c-cobalto">🏡</div><strong>Visita el taller</strong><span>Con cita, en SMA</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer style="opacity:.55">Cerámica SMA · San Miguel de Allende, Gto. · Del barro a tu mesa 💠</footer>
+
+<script>
+const pills = document.querySelectorAll('.pill');
+const glazeName = document.getElementById('glazeName');
+pills.forEach(p => {
+  p.addEventListener('click', () => {
+    pills.forEach(x => x.classList.remove('activo'));
+    p.classList.add('activo');
+    if(glazeName){
+      glazeName.style.opacity = 0;
+      setTimeout(() => { glazeName.textContent = 'Esmalte: ' + p.textContent.trim(); glazeName.style.opacity = 1; }, 200);
+    }
+  });
+});
+if(pills[1]) pills[1].classList.add('activo');
+
+// Patrón talavera repetido (mosaico 2x2 de motivos, muy sutil)
+const tile = `
+<svg xmlns="http://www.w3.org/2000/svg" width="280" height="280" viewBox="0 0 280 280">
+  <g fill="#F3EFE3">
+    <g transform="translate(0,0)">
+      <circle cx="70" cy="70" r="9"/>
+      <g id="pet"><path d="M70 22c6 12 6 22 0 28-6-6-6-16 0-28z"/></g>
+      <use href="#pet" transform="rotate(60 70 70)"/><use href="#pet" transform="rotate(120 70 70)"/>
+      <use href="#pet" transform="rotate(180 70 70)"/><use href="#pet" transform="rotate(240 70 70)"/>
+      <use href="#pet" transform="rotate(300 70 70)"/>
+      <circle cx="14" cy="14" r="4"/><circle cx="126" cy="14" r="4"/><circle cx="14" cy="126" r="4"/><circle cx="126" cy="126" r="4"/>
+    </g>
+    <g transform="translate(140,0)">
+      <path d="M52 52h36v36H52z" fill="none" stroke="#F3EFE3" stroke-width="4"/>
+      <circle cx="70" cy="70" r="8"/>
+      <path d="M70 30v14M70 96v14M30 70h14M96 70h14" stroke="#F3EFE3" stroke-width="6" stroke-linecap="round"/>
+    </g>
+    <g transform="translate(0,140)">
+      <path d="M46 78c10-20 30-28 48-24-4 10-2 17 5 21-9 3-13 9-14 16-10-4-20-2-27 6-5-8-10-14-12-19z"/>
+      <circle cx="84" cy="62" r="2.6" fill="#141C4D"/>
+      <path d="M36 52c6-3 11-1 14 4-5 3-10 2-14-4z"/>
+      <path d="M30 104h80v4H30z" opacity=".5"/>
+    </g>
+    <g transform="translate(140,140)">
+      <path d="M70 34c3 8 10 12 18 10-2 8 1 15 8 19-7 4-10 11-8 19-8-2-15 2-18 10-3-8-10-12-18-10 2-8-1-15-8-19 7-4 10-11 8-19 8 2 15-2 18-10z" opacity=".85"/>
+      <circle cx="70" cy="70" r="8" fill="#141C4D"/>
+      <circle cx="70" cy="70" r="3.5"/>
+    </g>
+  </g>
+</svg>`;
+document.getElementById('talaveraBg').style.backgroundImage =
+  `url("data:image/svg+xml,${encodeURIComponent(tile)}")`;
+
+// Parallax sutil de azulejos decorativos
+const azulejos = document.querySelectorAll('.azulejo');
+const bg = document.getElementById('talaveraBg');
+if (window.matchMedia('(pointer:fine)').matches) {
+  document.addEventListener('mousemove', e => {
+    const x = e.clientX / innerWidth - .5;
+    const y = e.clientY / innerHeight - .5;
+    bg.style.transform = `translate(${-x*12}px,${-y*12}px)`;
+    azulejos.forEach((a,i) => {
+      const p = 14 + i*6;
+      a.style.translate = `${-x*p}px ${-y*p}px`;
+    });
+  });
+}
+addEventListener('scroll', () => {
+  const y = scrollY;
+  azulejos.forEach((a,i) => { a.style.marginTop = `${y * (i%2? .03 : -.02)}px`; });
+}, {passive:true});
+
+/* ═══ EL VIAJE: azul (detalle) → fuego → barro crudo (origen) ═══ */
+// El pico del fuego se ancla a la posición real de la sección #horno
+const hornoEl = document.getElementById('horno');
+function pFuego(){
+  const max = document.documentElement.scrollHeight - innerHeight;
+  if(!hornoEl || max <= 0) return 0.28;
+  const centro = hornoEl.offsetTop + hornoEl.offsetHeight/2 - innerHeight/2;
+  return Math.min(0.85, Math.max(0.1, centro / max));
+}
+function construirParadas(){
+  const pf = pFuego();
+  return [
+    {p:0.00, c:[201,193,176]},          // barro crudo (el origen)
+    {p:Math.max(0.02,pf-0.13), c:[186,146,102]}, // barro calentando
+    {p:pf, c:[196,86,20]},              // fuego pleno: exacto en #horno
+    {p:Math.min(0.95,pf+0.13), c:[104,36,30]},   // brasa apagándose
+    {p:Math.min(0.97,pf+0.28), c:[38,30,82]},    // azul templado
+    {p:1.00, c:[20,28,77]}              // azul noche (pieza terminada)
+  ];
+}
+let paradas = construirParadas();
+addEventListener('resize', ()=>{ paradas = construirParadas(); });
+const lerp=(a,b,t)=>a+(b-a)*t;
+function colorEn(t){
+  for(let i=0;i<paradas.length-1;i++){
+    const a=paradas[i], b=paradas[i+1];
+    if(t>=a.p && t<=b.p){
+      const k=(t-a.p)/(b.p-a.p);
+      return a.c.map((v,j)=>Math.round(lerp(v,b.c[j],k)));
+    }
+  }
+  return paradas[paradas.length-1].c;
+}
+
+const fuego = document.getElementById('fuego');
+const chispasEl = document.getElementById('chispas');
+const tempEl = document.getElementById('temp');
+const talavera = document.getElementById('talaveraBg');
+
+// Generar chispas
+for(let i=0;i<10;i++){
+  const c=document.createElement('div');
+  c.className='chispa';
+  c.style.left=(5+Math.random()*90)+'%';
+  c.style.setProperty('--drift',(Math.random()*80-40)+'px');
+  c.style.animationDuration=(3.5+Math.random()*3)+'s';
+  c.style.animationDelay=(Math.random()*4)+'s';
+  c.style.scale=(0.6+Math.random()*0.9);
+  chispasEl.appendChild(c);
+}
+
+let ticking=false;
+function pintar(){
+  ticking=false;
+  const max=document.documentElement.scrollHeight-innerHeight;
+  const t=Math.min(1,Math.max(0,scrollY/max));
+  const [r,g,b]=colorEn(t);
+  document.body.style.backgroundColor=`rgb(${r},${g},${b})`;
+
+  // Fuego: campana centrada exactamente en la sección del horno
+  const pf = pFuego();
+  const intensidad=Math.max(0,1-Math.abs(t-pf)/0.14);
+  fuego.style.opacity=(intensidad*0.95).toFixed(2);
+  chispasEl.style.opacity=(intensidad*0.85).toFixed(2);
+
+  // Talavera: visible solo en la zona azul (después del horno)
+  const zonaAzul=Math.min(1,Math.max(0,(t-(pf+0.2))/0.2));
+  talavera.style.opacity=(0.07*zonaAzul).toFixed(3);
+  azulejos.forEach(a=>a.style.opacity=(0.10*zonaAzul).toFixed(3));
+
+  // Temperatura del horno (pico 1240 °C en el fuego)
+  if(tempEl){
+    const temp=Math.round(20+intensidad*1220);
+    tempEl.textContent=temp+' °C';
+    tempEl.style.color=intensidad>0.5?'#FFD98A':'var(--oro)';
+  }
+
+  // Nav: texto oscuro en la zona de barro claro, crema después
+  const navEl=document.querySelector('nav');
+  if(navEl) navEl.style.color = t<0.10 ? '#3E362C' : 'var(--crema)';
+}
+addEventListener('scroll',()=>{ if(!ticking){ticking=true;requestAnimationFrame(pintar);} },{passive:true});
+pintar();
+</script>
+</body>
+</html>

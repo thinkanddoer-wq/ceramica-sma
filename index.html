@@ -325,8 +325,8 @@ footer{position:relative;z-index:1;text-align:center;padding:2.5rem;font-size:.7
 
 /* ═══ PROCESO: bloques verticales con zigzag ═══ */
 .proceso-zona{position:relative;z-index:1}
-.proceso-flecha{position:absolute;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
-.proceso-flecha svg{width:100%;height:100%}
+.proceso-flecha{position:absolute;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;overflow:hidden}
+.proceso-flecha svg{width:100%;height:100%;overflow:visible}
 .flecha-linea{
   fill:none;stroke:rgba(138,106,82,.28);stroke-width:2;
   stroke-linecap:round;stroke-linejoin:round;
@@ -369,7 +369,6 @@ footer{position:relative;z-index:1;text-align:center;padding:2.5rem;font-size:.7
   .paso-der p{margin:0 auto}
   .paso-der .paso-foto{margin:0 auto}
   .paso-izq .paso-foto,.paso-der .paso-foto{transform:rotate(0);margin:0 auto}
-  .proceso-flecha{display:none}
   .paso-layout{flex-direction:column!important;gap:1.4rem}
   .paso-der .paso-foto-wrap{margin:0 auto}
 }
@@ -447,16 +446,9 @@ footer{position:relative;z-index:1;text-align:center;padding:2.5rem;font-size:.7
   </div>
 
   <div class="proceso-flecha" id="procesoFlecha">
-    <svg viewBox="0 0 100 500" preserveAspectRatio="none">
+    <svg id="flechaSvg" style="position:absolute;top:0;left:0;width:100%;height:100%;overflow:visible">
       <defs><marker id="arr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><path d="M0 0 L8 3 L0 6z" class="flecha-punta"/></marker></defs>
-      <path class="flecha-linea" id="flechaPath"
-        d="M30 10 C30 45 70 50 70 90
-           C70 130 30 140 30 180
-           C30 220 70 230 70 270
-           C70 310 30 320 30 360
-           C30 400 70 410 70 450
-           L50 495"
-        marker-end="url(#arr)"/>
+      <path class="flecha-linea" id="flechaPath" d="" marker-end="url(#arr)"/>
     </svg>
   </div>
 
@@ -879,22 +871,64 @@ addEventListener('load', pintar);
 addEventListener('resize', pintar);
 pintar();
 
-// Flecha del proceso: dibujar con scroll
-const flechaPath=document.getElementById('flechaPath');
-if(flechaPath){
-  const len=flechaPath.getTotalLength();
-  flechaPath.style.strokeDasharray=len;
-  flechaPath.style.strokeDashoffset=len;
-  const procesoEl=document.getElementById('proceso');
-  function dibujarFlecha(){
-    if(!procesoEl) return;
-    const rect=procesoEl.getBoundingClientRect();
-    const prog=Math.min(1,Math.max(0,-rect.top/(rect.height-innerHeight)));
-    flechaPath.style.strokeDashoffset=(len*(1-prog)).toFixed(1);
+// Flecha del proceso: path generado desde posiciones reales de los pasos
+(function(){
+  var path = document.getElementById('flechaPath');
+  var zona = document.getElementById('proceso');
+  var svg = document.getElementById('flechaSvg');
+  if(!path || !zona || !svg) return;
+  var pasoIds = ['paso-1','paso-2','paso-3','paso-4','paso-5','horno'];
+  var curLen = 0;
+
+  function generarPath(){
+    var zonaRect = zona.getBoundingClientRect();
+    var zonaTop = zona.offsetTop;
+    var zonaW = zona.offsetWidth;
+    var puntos = [];
+    for(var i=0; i<pasoIds.length; i++){
+      var el = document.getElementById(pasoIds[i]);
+      if(!el) continue;
+      var r = el.getBoundingClientRect();
+      var cy = el.offsetTop + r.height/2 - zonaTop;
+      // Desktop: zigzag izq/der; Mobile: serpenteo suave al centro
+      var cx;
+      if(window.innerWidth > 900){
+        cx = (i % 2 === 0) ? zonaW * 0.22 : zonaW * 0.78;
+      } else {
+        cx = zonaW/2 + (i % 2 === 0 ? -zonaW*0.08 : zonaW*0.08);
+      }
+      puntos.push({x:cx, y:cy});
+    }
+    if(puntos.length < 2) return;
+    // Build smooth cubic bezier path
+    var d = 'M' + puntos[0].x.toFixed(0) + ' ' + puntos[0].y.toFixed(0);
+    for(var j=1; j<puntos.length; j++){
+      var prev = puntos[j-1];
+      var cur = puntos[j];
+      var midY = (prev.y + cur.y) / 2;
+      d += ' C' + prev.x.toFixed(0) + ' ' + midY.toFixed(0)
+         + ' ' + cur.x.toFixed(0) + ' ' + midY.toFixed(0)
+         + ' ' + cur.x.toFixed(0) + ' ' + cur.y.toFixed(0);
+    }
+    path.setAttribute('d', d);
+    curLen = path.getTotalLength();
+    path.style.strokeDasharray = curLen;
+    path.style.strokeDashoffset = curLen;
+    dibujarFlecha();
   }
-  addEventListener('scroll',dibujarFlecha,{passive:true});
-  dibujarFlecha();
-}
+
+  function dibujarFlecha(){
+    if(!curLen) return;
+    var rect = zona.getBoundingClientRect();
+    var prog = Math.min(1, Math.max(0, -rect.top / (rect.height - innerHeight)));
+    path.style.strokeDashoffset = (curLen * (1 - prog)).toFixed(1);
+  }
+
+  generarPath();
+  addEventListener('scroll', dibujarFlecha, {passive:true});
+  addEventListener('resize', generarPath);
+  addEventListener('load', generarPath);
+})();
 
 </script>
 </body>

@@ -497,6 +497,7 @@ footer{position:relative;z-index:1;text-align:center;padding:2.5rem;font-size:.7
           <div class="paso-num">03</div>
           <h3>Primer horno</h3>
           <p>Se mete al horno para extraer la humedad.</p>
+          <div id="tempPrimer" style="font-family:'Cormorant Garamond',serif;font-size:clamp(1.4rem,3vw,2rem);color:var(--oro);margin-top:.8rem;opacity:0">20 °C</div>
         </div>
         <div class="paso-foto-wrap">
           <div class="foto paso-foto f-arco"><span class="foto-tag">foto · primer horno</span></div>
@@ -761,9 +762,9 @@ function construirParadas(){
   return [
     {p:0.00, c:[255,255,255]},          // blanco (quiénes somos)
     {p:0.10, c:[201,193,176]},           // arcilla (el origen)
-    {p:Math.max(0.14,ph-0.04), c:[201,193,176]}, // arcilla antes del primer horno
-    {p:ph, c:[215,165,130]},             // leve calor (primer horno)
-    {p:Math.min(ph+0.04,pf-0.06), c:[201,193,176]}, // vuelve a arcilla
+    {p:Math.max(0.14,ph-0.03), c:[201,193,176]}, // arcilla antes del primer horno
+    {p:ph, c:[220,140,80]},              // pico naranja (primer horno ~900°C)
+    {p:Math.min(ph+0.03,pf-0.06), c:[201,193,176]}, // vuelve a arcilla rápido
     {p:Math.max(ph+0.06,pf-0.03), c:[186,146,102]}, // arcilla calentando
     {p:pf, c:[196,86,20]},              // fuego pleno (segunda quema / horno)
     {p:Math.min(0.95,pf+0.10), c:[104,36,30]},   // brasa apagándose
@@ -788,6 +789,7 @@ function colorEn(t){
 const fuego = document.getElementById('fuego');
 const chispasEl = document.getElementById('chispas');
 const tempEl = document.getElementById('temp');
+const tempPrimerEl = document.getElementById('tempPrimer');
 const talavera = document.getElementById('talaveraBg');
 
 // Generar chispas
@@ -810,22 +812,33 @@ function pintar(){
   const [r,g,b]=colorEn(t);
   document.body.style.backgroundColor=`rgb(${r},${g},${b})`;
 
-  // Fuego: campana centrada exactamente en la sección del horno
+  // Doble pico de fuego: primer horno (corto) + horno final (pleno)
   const pf = pSeccion(hornoEl);
-  const intensidad=Math.max(0,1-Math.abs(t-pf)/0.14);
-  fuego.style.opacity=(intensidad*0.95).toFixed(2);
-  chispasEl.style.opacity=(intensidad*0.85).toFixed(2);
+  const ph = pSeccion(primerHornoEl);
+  const intFinal=Math.max(0,1-Math.abs(t-pf)/0.14);
+  const intPrimer=Math.max(0,1-Math.abs(t-ph)/0.06); // campana angosta
+  const intCombinada=Math.max(intPrimer*0.5, intFinal);
+  fuego.style.opacity=(intCombinada*0.95).toFixed(2);
+  chispasEl.style.opacity=(intCombinada*0.85).toFixed(2);
 
   // Talavera: visible solo en la zona azul (después del horno)
   const zonaAzul=Math.min(1,Math.max(0,(t-(pf+0.2))/0.2));
   talavera.style.opacity=(0.07*zonaAzul).toFixed(3);
   azulejos.forEach(a=>a.style.opacity=(0.10*zonaAzul).toFixed(3));
 
-  // Temperatura del horno (pico 1255 °C en el fuego)
+  // Temperatura del horno final (pico 1255 °C)
   if(tempEl){
-    const temp=Math.round(20+intensidad*1235);
+    const temp=Math.round(20+intFinal*1235);
     tempEl.textContent=temp+' °C';
-    tempEl.style.color=intensidad>0.5?'#FFD98A':'var(--oro)';
+    tempEl.style.color=intFinal>0.5?'#FFD98A':'var(--oro)';
+  }
+
+  // Temperatura del primer horno (pico 900 °C, campana corta)
+  if(tempPrimerEl){
+    const temp2=Math.round(20+intPrimer*880);
+    tempPrimerEl.textContent=temp2+' °C';
+    tempPrimerEl.style.opacity=intPrimer>0.05?1:0;
+    tempPrimerEl.style.color=intPrimer>0.5?'#FFD98A':'var(--oro)';
   }
 
   // Nav: texto oscuro en la zona de barro claro, crema después

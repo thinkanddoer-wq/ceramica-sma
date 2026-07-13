@@ -460,7 +460,7 @@ footer{position:relative;z-index:1;text-align:center;padding:2.5rem;font-size:.7
     </svg>
   </div>
 
-  <div class="paso-bloque paso-izq">
+  <div class="paso-bloque paso-izq" id="paso-1">
     <div class="paso-inner">
       <div class="paso-layout">
         <div>
@@ -475,7 +475,7 @@ footer{position:relative;z-index:1;text-align:center;padding:2.5rem;font-size:.7
     </div>
   </div>
 
-  <div class="paso-bloque paso-der" id="pasoModelado">
+  <div class="paso-bloque paso-der" id="paso-2">
     <div class="paso-inner">
       <div class="paso-layout">
         <div>
@@ -490,14 +490,14 @@ footer{position:relative;z-index:1;text-align:center;padding:2.5rem;font-size:.7
     </div>
   </div>
 
-  <div class="paso-bloque paso-izq paso-fuego" id="primerHorno">
+  <div class="paso-bloque paso-izq paso-fuego" id="paso-3">
     <div class="paso-inner">
       <div class="paso-layout">
         <div>
           <div class="paso-num">03</div>
           <h3>Primer horno</h3>
           <p>Se mete al horno para extraer la humedad.</p>
-          <div id="tempPrimer" style="font-family:'Cormorant Garamond',serif;font-size:clamp(1.4rem,3vw,2rem);color:var(--oro);margin-top:.8rem;opacity:0">20 °C</div>
+          <div id="temp-paso3" style="font-family:'Cormorant Garamond',serif;font-size:clamp(1.4rem,3vw,2rem);color:var(--oro);margin-top:.8rem;opacity:0">20 °C</div>
         </div>
         <div class="paso-foto-wrap">
           <div class="foto paso-foto f-arco"><span class="foto-tag">foto · primer horno</span></div>
@@ -506,7 +506,7 @@ footer{position:relative;z-index:1;text-align:center;padding:2.5rem;font-size:.7
     </div>
   </div>
 
-  <div class="paso-bloque paso-der" id="pasoEsmaltado">
+  <div class="paso-bloque paso-der" id="paso-4">
     <div class="paso-inner">
       <div class="paso-layout">
         <div>
@@ -521,7 +521,7 @@ footer{position:relative;z-index:1;text-align:center;padding:2.5rem;font-size:.7
     </div>
   </div>
 
-  <div class="paso-bloque paso-izq">
+  <div class="paso-bloque paso-izq" id="paso-5">
     <div class="paso-inner">
       <div class="paso-layout">
         <div>
@@ -747,60 +747,22 @@ addEventListener('scroll', () => {
   azulejos.forEach((a,i) => { a.style.marginTop = `${y * (i%2? .03 : -.02)}px`; });
 }, {passive:true});
 
-/* ═══ EL VIAJE: blanco → arena → rojo leve → arena → fuego → azul ═══ */
-/* Anclas recalculadas en CADA frame (offsetTop cambia al cargar imágenes) */
-const hornoEl = document.getElementById('horno');
-const primerHornoEl = document.getElementById('primerHorno');
-const origenEl = document.getElementById('origen');
-const modeladoEl = document.getElementById('pasoModelado');
-const esmaltadoEl = document.getElementById('pasoEsmaltado');
-const esmaltesSecEl = document.getElementById('esmaltes');
-function pPos(el){
-  const max = document.documentElement.scrollHeight - innerHeight;
-  if(!el || max <= 0) return 0.3;
-  const centro = el.offsetTop + el.offsetHeight/2 - innerHeight/2;
-  return Math.min(0.95, Math.max(0.02, centro / max));
-}
-function construirParadas(){
-  const po = pPos(origenEl);
-  const p2 = pPos(modeladoEl);
-  const ph = pPos(primerHornoEl);
-  const p4 = pPos(esmaltadoEl);
-  const pf = pPos(hornoEl);
-  const pe = pPos(esmaltesSecEl);
-  const s=[];
-  s.push({p:0.00, c:[255,255,255]});              // blanco (quiénes somos)
-  s.push({p:Math.max(0.04,po-0.04), c:[240,235,225]});// transición
-  s.push({p:po, c:[201,193,176]});                // arena (origen)
-  s.push({p:p2, c:[201,193,176]});                // arena (paso 02)
-  s.push({p:(p2+ph)/2, c:[201,193,176]});         // arena entre 02↔03
-  s.push({p:ph, c:[220,140,80]});                 // pico naranja (paso 03)
-  s.push({p:(ph+p4)/2, c:[201,193,176]});         // arena entre 03↔04
-  s.push({p:p4, c:[201,193,176]});                // arena (paso 04)
-  s.push({p:(p4+pf)/2, c:[186,146,102]});         // arena calentando
-  s.push({p:pf, c:[196,86,20]});                  // fuego pleno (horno)
-  s.push({p:(pf+pe)/2, c:[80,45,60]});            // brasa → azul rápido
-  s.push({p:pe, c:[30,32,78]});                   // azul templado (esmaltes)
-  s.push({p:1.00, c:[20,28,77]});                 // azul noche
-  for(let i=1;i<s.length;i++) if(s[i].p<=s[i-1].p) s[i].p=s[i-1].p+0.003;
-  return s;
-}
-const lerp=(a,b,t)=>a+(b-a)*t;
-function colorEn(paradas,t){
-  for(let i=0;i<paradas.length-1;i++){
-    const a=paradas[i], b=paradas[i+1];
-    if(t>=a.p && t<=b.p){
-      const k=(t-a.p)/(b.p-a.p);
-      return a.c.map((v,j)=>Math.round(lerp(v,b.c[j],k)));
-    }
-  }
-  return paradas[paradas.length-1].c;
-}
-
+/* ═══ MOTOR DE COLOR POR ZONAS — medido en vivo, inmune a cambios de layout ═══ */
+const ZONAS = [
+  ['quienes-somos', [255,255,255]],
+  ['origen',        [201,193,176]],
+  ['paso-1',        [201,193,176]],
+  ['paso-2',        [201,193,176]],
+  ['paso-3',        [170,70,30]],
+  ['paso-4',        [201,193,176]],
+  ['paso-5',        [201,193,176]],
+  ['horno',         [196,86,20]],
+  ['esmaltes',      [38,30,82]],
+  ['colecciones',   [20,28,77]]
+];
 const fuego = document.getElementById('fuego');
 const chispasEl = document.getElementById('chispas');
 const tempEl = document.getElementById('temp');
-const tempPrimerEl = document.getElementById('tempPrimer');
 const talavera = document.getElementById('talaveraBg');
 
 // Generar chispas
@@ -815,53 +777,77 @@ for(let i=0;i<10;i++){
   chispasEl.appendChild(c);
 }
 
+function centroDe(id){
+  const el = document.getElementById(id);
+  if(!el) return null;
+  const r = el.getBoundingClientRect();
+  return scrollY + r.top + r.height/2;
+}
+
 let ticking=false;
 function pintar(){
-  ticking=false;
-  const max=document.documentElement.scrollHeight-innerHeight;
-  const t=Math.min(1,Math.max(0,scrollY/max));
+  ticking = false;
+  const centro = scrollY + innerHeight/2;
 
-  // Recalcular anclas en cada frame (offsetTop cambia al cargar imágenes)
-  const paradas=construirParadas();
-  const pf = pPos(hornoEl);
-  const ph = pPos(primerHornoEl);
-  const pe = pPos(esmaltesSecEl);
+  // anclas medidas AHORA (getBoundingClientRect en cada frame)
+  const anclas = [];
+  for(const [id,c] of ZONAS){
+    const y = centroDe(id);
+    if(y !== null) anclas.push({y, c});
+  }
+  anclas.sort((a,b)=>a.y-b.y);
 
-  const [r,g,b]=colorEn(paradas,t);
-  document.body.style.backgroundColor=`rgb(${r},${g},${b})`;
+  // interpolación entre anclas
+  let col = anclas[0].c;
+  if(centro >= anclas[anclas.length-1].y) col = anclas[anclas.length-1].c;
+  else if(centro > anclas[0].y){
+    for(let i=0;i<anclas.length-1;i++){
+      if(centro >= anclas[i].y && centro <= anclas[i+1].y){
+        const k = (centro - anclas[i].y) / (anclas[i+1].y - anclas[i].y);
+        col = anclas[i].c.map((v,j)=>Math.round(v + (anclas[i+1].c[j]-v)*k));
+        break;
+      }
+    }
+  }
+  document.body.style.backgroundColor = `rgb(${col[0]},${col[1]},${col[2]})`;
 
-  // Doble pico de fuego: primer horno (corto) + horno final (pleno)
-  const intFinal=Math.max(0,1-Math.abs(t-pf)/0.08);
-  const intPrimer=Math.max(0,1-Math.abs(t-ph)/0.04);
-  const intCombinada=Math.max(intPrimer*0.45, intFinal);
-  fuego.style.opacity=(intCombinada*0.95).toFixed(2);
-  chispasEl.style.opacity=(intCombinada*0.85).toFixed(2);
+  // intensidades de fuego por cercanía real (0 a 1)
+  const cerca = (id, radio) => {
+    const y = centroDe(id);
+    return y===null ? 0 : Math.max(0, 1 - Math.abs(centro - y)/radio);
+  };
+  const fuegoFinal = cerca('horno', innerHeight*0.8);
+  const fuegoPaso3 = cerca('paso-3', innerHeight*0.45);
+  const glow = Math.max(fuegoFinal, fuegoPaso3*0.55);
+  fuego.style.opacity = (glow*0.95).toFixed(2);
+  chispasEl.style.opacity = (glow*0.85).toFixed(2);
 
-  // Talavera: visible desde la sección esmaltes en adelante
-  const zonaAzul=Math.min(1,Math.max(0,(t-((pf+pe)/2))/(pe-(pf+pe)/2)));
-  talavera.style.opacity=(0.07*zonaAzul).toFixed(3);
+  // contadores de temperatura
+  if(tempEl){
+    tempEl.textContent = Math.round(20 + fuegoFinal*1235) + ' °C';
+    tempEl.style.color = fuegoFinal>0.5 ? '#FFD98A' : 'var(--oro)';
+  }
+  const temp3 = document.getElementById('temp-paso3');
+  if(temp3){
+    temp3.textContent = Math.round(20 + fuegoPaso3*880) + ' °C';
+    temp3.style.opacity = fuegoPaso3>0.05 ? 1 : 0;
+    temp3.style.color = fuegoPaso3>0.5 ? '#FFD98A' : 'var(--oro)';
+  }
+
+  // talavera y azulejos: solo en zona azul (desde esmaltes hacia abajo)
+  const yEsm = centroDe('esmaltes');
+  const zonaAzul = yEsm===null ? 0 : Math.min(1, Math.max(0, (centro - (yEsm - innerHeight))/innerHeight));
+  talavera.style.opacity = (0.09*zonaAzul).toFixed(3);
   azulejos.forEach(a=>a.style.opacity=(0.10*zonaAzul).toFixed(3));
 
-  // Temperatura del horno final (pico 1255 °C)
-  if(tempEl){
-    const temp=Math.round(20+intFinal*1235);
-    tempEl.textContent=temp+' °C';
-    tempEl.style.color=intFinal>0.5?'#FFD98A':'var(--oro)';
-  }
-
-  // Temperatura del primer horno (pico 900 °C, campana corta)
-  if(tempPrimerEl){
-    const temp2=Math.round(20+intPrimer*880);
-    tempPrimerEl.textContent=temp2+' °C';
-    tempPrimerEl.style.opacity=intPrimer>0.05?1:0;
-    tempPrimerEl.style.color=intPrimer>0.5?'#FFD98A':'var(--oro)';
-  }
-
-  // Nav: texto oscuro en zonas claras, crema desde antes del primer pico
-  const navEl=document.querySelector('nav');
-  if(navEl) navEl.style.color = t<(ph-0.03) ? '#3E362C' : 'var(--crema)';
+  // nav: texto oscuro sobre fondos claros (por luminancia)
+  const lum = 0.299*col[0] + 0.587*col[1] + 0.114*col[2];
+  const navEl = document.querySelector('nav');
+  if(navEl) navEl.style.color = lum > 150 ? '#3E362C' : 'var(--crema)';
 }
 addEventListener('scroll',()=>{ if(!ticking){ticking=true;requestAnimationFrame(pintar);} },{passive:true});
+addEventListener('load', pintar);
+addEventListener('resize', pintar);
 pintar();
 
 // Flecha del proceso: dibujar con scroll

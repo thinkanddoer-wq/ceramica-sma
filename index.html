@@ -362,7 +362,7 @@ footer{position:relative;z-index:1;text-align:center;padding:2.5rem;font-size:.7
       <h2 style="font-family:'Cormorant Garamond',serif;font-weight:300;font-size:clamp(1.8rem,3.4vw,2.6rem);line-height:1.15;margin-bottom:1.2rem;color:#3E362C">Qué hacemos y cómo lo <em style="font-style:italic;color:#8A6A52">hacemos</em></h2>
       <p style="margin:0 auto 2rem;color:#3E362C;opacity:.75;font-size:1.02rem;font-weight:300;line-height:1.75;max-width:42ch">Somos una fábrica de cerámica artesanal en alta temperatura. Cada pieza pasa por las mismas manos mexicanas, del torno al horno.</p>
       <div style="max-width:640px;margin:0 auto">
-        <div class="foto f-suave" style="aspect-ratio:16/10;border-radius:28px"><span class="foto-tag">foto · nuestros artesanos</span></div>
+        <div class="foto f-suave" style="aspect-ratio:16/10;border-radius:28px"><img src="img/senora.jpg" alt="Artesana de Cerámica SMA"></div>
         <div class="foto-cap">Manos mexicanas · Santa María Canchesda</div>
       </div>
     </div>
@@ -603,8 +603,9 @@ function construirParadas(){
   const pf = pFuego();
   return [
     {p:0.00, c:[255,255,255]},          // blanco (quiénes somos)
-    {p:0.11, c:[201,193,176]},           // barro crudo (el origen)
-    {p:Math.max(0.14,pf-0.13), c:[186,146,102]}, // barro calentando
+    {p:0.10, c:[201,193,176]},           // arcilla (el origen)
+    {p:Math.max(0.20,pf-0.10), c:[201,193,176]}, // arcilla se mantiene
+    {p:Math.max(0.25,pf-0.06), c:[186,146,102]}, // arcilla calentando
     {p:pf, c:[196,86,20]},              // fuego pleno: exacto en #horno
     {p:Math.min(0.95,pf+0.13), c:[104,36,30]},   // brasa apagándose
     {p:Math.min(0.97,pf+0.28), c:[38,30,82]},    // azul templado

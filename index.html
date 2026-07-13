@@ -692,6 +692,24 @@ footer{position:relative;z-index:1;text-align:center;padding:2.5rem;font-size:.7
 </footer>
 
 <script>
+// WhatsApp: URLs generadas PRIMERO, antes de cualquier otro código
+(function(){
+  var WA = '527225107275';
+  var mensajes = {
+    'wa-restaurantes': '\u00A1Hola! \uD83D\uDC4B Estoy interesado en cer\u00E1mica para Restaurantes o Caf\u00E9 \u2615',
+    'wa-hoteles': '\u00A1Hola! \uD83D\uDC4B Estoy interesado en cer\u00E1mica para Hoteles \uD83C\uDFE8',
+    'wa-tequileras': '\u00A1Hola! \uD83D\uDC4B Estoy interesado en cer\u00E1mica para Tequileras o Botellas \uD83C\uDF7E',
+    'wa-personalizados': '\u00A1Hola! \uD83D\uDC4B Estoy interesado en una pieza Personalizada \u2728',
+    'wa-taller': '\u00A1Hola! \uD83D\uDC4B Me encantar\u00EDa agendar una visita al taller \uD83C\uDFE1',
+    'wa-esmalte': '\u00A1Hola! \uD83D\uDC4B Estoy interesado en una pieza con el esmalte que eleg\u00ED \uD83C\uDFA8',
+    'wa-principal': '\u00A1Hola! \uD83D\uDC4B Vengo de la p\u00E1gina de Cer\u00E1mica SMA y quiero m\u00E1s informaci\u00F3n \uD83C\uDFFA'
+  };
+  for(var id in mensajes){
+    var el = document.getElementById(id);
+    if(el) el.href = 'https://wa.me/' + WA + '?text=' + encodeURIComponent(mensajes[id]);
+  }
+})();
+
 const pills = document.querySelectorAll('.pill');
 const glazeName = document.getElementById('glazeName');
 pills.forEach(p => {
@@ -878,21 +896,6 @@ if(flechaPath){
   dibujarFlecha();
 }
 
-// WhatsApp: URLs generadas con encodeURIComponent para emojis correctos
-const WA = '527225107275';
-const mensajesWA = {
-  'wa-restaurantes': '\u00A1Hola! \uD83D\uDC4B Estoy interesado en cer\u00E1mica para Restaurantes o Caf\u00E9 \u2615',
-  'wa-hoteles': '\u00A1Hola! \uD83D\uDC4B Estoy interesado en cer\u00E1mica para Hoteles \uD83C\uDFE8',
-  'wa-tequileras': '\u00A1Hola! \uD83D\uDC4B Estoy interesado en cer\u00E1mica para Tequileras o Botellas \uD83C\uDF7E',
-  'wa-personalizados': '\u00A1Hola! \uD83D\uDC4B Estoy interesado en una pieza Personalizada \u2728',
-  'wa-taller': '\u00A1Hola! \uD83D\uDC4B Me encantar\u00EDa agendar una visita al taller \uD83C\uDFE1',
-  'wa-esmalte': '\u00A1Hola! \uD83D\uDC4B Estoy interesado en una pieza con el esmalte que eleg\u00ED \uD83C\uDFA8',
-  'wa-principal': '\u00A1Hola! \uD83D\uDC4B Vengo de la p\u00E1gina de Cer\u00E1mica SMA y quiero m\u00E1s informaci\u00F3n \uD83C\uDFFA'
-};
-for(const [id, msg] of Object.entries(mensajesWA)){
-  const el = document.getElementById(id);
-  if(el) el.href = 'https://wa.me/' + WA + '?text=' + encodeURIComponent(msg);
-}
 </script>
 </body>
 </html>

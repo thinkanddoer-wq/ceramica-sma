@@ -322,6 +322,50 @@ footer{position:relative;z-index:1;text-align:center;padding:2.5rem;font-size:.7
 @media(max-width:900px){
   .esmalte-grid{grid-template-columns:1fr;gap:3rem}
 }
+
+/* ═══ PROCESO: recorrido serpiente ═══ */
+.proceso-wrap{position:relative;max-width:860px;margin:0 auto}
+.proceso-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2.2rem 2.8rem;position:relative;z-index:2}
+.paso{
+  padding:2rem 1.6rem;border-radius:22px;
+  background:rgba(201,193,176,.12);
+  backdrop-filter:blur(10px);
+  border:1.5px solid rgba(138,106,82,.2);
+  transition:transform .4s cubic-bezier(.2,.8,.2,1);
+}
+.paso:hover{transform:translateY(-6px)}
+.paso-num{
+  display:inline-grid;place-items:center;
+  width:38px;height:38px;border-radius:50%;
+  font-family:'Cormorant Garamond',serif;font-weight:600;font-size:1.1rem;
+  margin-bottom:.9rem;
+  background:rgba(138,106,82,.18);color:#3E362C;
+}
+.paso h3{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:1.2rem;margin-bottom:.4rem}
+.paso p{font-size:.88rem;line-height:1.55;opacity:.7}
+.paso-fuego{border-color:rgba(196,86,20,.35);background:rgba(196,86,20,.08)}
+.paso-fuego .paso-num{background:rgba(196,86,20,.25);color:#8B2E0A}
+/* Serpiente: fila 2 invertida */
+.paso:nth-child(4){order:6}
+.paso:nth-child(5){order:5}
+.paso:nth-child(6){order:4}
+/* Flecha SVG */
+.proceso-flecha{position:absolute;inset:0;z-index:1;pointer-events:none}
+.proceso-flecha svg{width:100%;height:100%}
+.flecha-linea{
+  fill:none;stroke:rgba(138,106,82,.3);stroke-width:2.5;
+  stroke-linecap:round;stroke-linejoin:round;
+  stroke-dasharray:var(--len);stroke-dashoffset:var(--len);
+  transition:stroke-dashoffset .05s linear;
+}
+.flecha-punta{fill:rgba(138,106,82,.4)}
+@media(max-width:900px){
+  .proceso-grid{grid-template-columns:1fr;gap:1.4rem}
+  .paso:nth-child(4){order:4}
+  .paso:nth-child(5){order:5}
+  .paso:nth-child(6){order:6}
+  .proceso-flecha{display:none}
+}
 </style>
 </head>
 <body>
@@ -380,6 +424,59 @@ footer{position:relative;z-index:1;text-align:center;padding:2.5rem;font-size:.7
     <div style="font-size:.7rem;letter-spacing:.35em;text-transform:uppercase;opacity:.5;animation:respira 3s ease-in-out infinite">▼ el proceso</div>
   </div>
 </header>
+
+<section class="seccion" id="proceso" style="color:#3E362C;padding-top:8rem">
+  <div class="seccion-head" style="text-align:center;margin-inline:auto">
+    <div class="eyebrow" style="color:#8A6A52;justify-content:center"><span style="color:#8A6A52">El proceso</span></div>
+    <h2 style="color:#3E362C">Cómo nace cada <em style="color:#8A6A52">pieza</em></h2>
+  </div>
+  <div class="proceso-wrap" id="procesoWrap">
+    <div class="proceso-flecha" id="procesoFlecha">
+      <svg viewBox="0 0 860 420" preserveAspectRatio="none">
+        <defs><marker id="arr" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0 0 L10 4 L0 8z" class="flecha-punta"/></marker></defs>
+        <path class="flecha-linea" id="flechaPath"
+          d="M90 95 H400 H720
+             C780 95 780 165 780 200
+             Q780 290 720 310
+             H430 H140
+             C80 310 80 370 80 400"
+          marker-end="url(#arr)"/>
+      </svg>
+    </div>
+    <div class="proceso-grid">
+      <div class="paso">
+        <div class="paso-num">1</div>
+        <h3>El molino</h3>
+        <p>Se hace la mezcla de arcilla en el molino.</p>
+      </div>
+      <div class="paso">
+        <div class="paso-num">2</div>
+        <h3>Modelado</h3>
+        <p>De la pasta se crea la pieza.</p>
+      </div>
+      <div class="paso paso-fuego">
+        <div class="paso-num">3</div>
+        <h3>Primer horno</h3>
+        <p>Se mete al horno para extraer la humedad.</p>
+      </div>
+      <div class="paso">
+        <div class="paso-num">4</div>
+        <h3>Esmaltado</h3>
+        <p>Se saca del horno y se esmalta.</p>
+      </div>
+      <div class="paso">
+        <div class="paso-num">5</div>
+        <h3>Decorado</h3>
+        <p>Especial y personalizado, pintado a mano.</p>
+      </div>
+      <div class="paso paso-fuego">
+        <div class="paso-num">6</div>
+        <h3>Segunda quema</h3>
+        <p>Al horno de nuevo, a 1255 °C.</p>
+      </div>
+    </div>
+  </div>
+</section>
 
 <section class="seccion" id="horno" style="text-align:center;min-height:85vh;display:grid;place-items:center;position:relative;overflow:hidden">
   <div style="position:relative;z-index:2">
@@ -604,9 +701,11 @@ function construirParadas(){
   return [
     {p:0.00, c:[255,255,255]},          // blanco (quiénes somos)
     {p:0.10, c:[201,193,176]},           // arcilla (el origen)
-    {p:Math.max(0.20,pf-0.10), c:[201,193,176]}, // arcilla se mantiene
-    {p:Math.max(0.25,pf-0.06), c:[186,146,102]}, // arcilla calentando
-    {p:pf, c:[196,86,20]},              // fuego pleno: exacto en #horno
+    {p:Math.max(0.18,pf-0.18), c:[201,193,176]}, // arcilla se mantiene (proceso)
+    {p:Math.max(0.22,pf-0.14), c:[210,170,140]}, // leve calor (primer horno)
+    {p:Math.max(0.26,pf-0.10), c:[201,193,176]}, // vuelve a arcilla
+    {p:Math.max(0.30,pf-0.05), c:[186,146,102]}, // arcilla calentando
+    {p:pf, c:[196,86,20]},              // fuego pleno: exacto en #horno (segunda quema)
     {p:Math.min(0.95,pf+0.13), c:[104,36,30]},   // brasa apagándose
     {p:Math.min(0.97,pf+0.28), c:[38,30,82]},    // azul templado
     {p:1.00, c:[20,28,77]}              // azul noche (pieza terminada)
@@ -671,10 +770,30 @@ function pintar(){
 
   // Nav: texto oscuro en la zona de barro claro, crema después
   const navEl=document.querySelector('nav');
-  if(navEl) navEl.style.color = t<0.16 ? '#3E362C' : 'var(--crema)';
+  if(navEl) navEl.style.color = t<0.22 ? '#3E362C' : 'var(--crema)';
 }
 addEventListener('scroll',()=>{ if(!ticking){ticking=true;requestAnimationFrame(pintar);} },{passive:true});
 pintar();
+
+// Flecha del proceso: dibujar con scroll
+const flechaPath=document.getElementById('flechaPath');
+if(flechaPath){
+  const len=flechaPath.getTotalLength();
+  flechaPath.style.setProperty('--len',len);
+  flechaPath.style.strokeDasharray=len;
+  flechaPath.style.strokeDashoffset=len;
+  const procesoEl=document.getElementById('proceso');
+  function dibujarFlecha(){
+    if(!procesoEl) return;
+    const rect=procesoEl.getBoundingClientRect();
+    const inicio=rect.top+rect.height*0.25;
+    const fin=rect.bottom-rect.height*0.15;
+    const prog=Math.min(1,Math.max(0,(innerHeight-inicio)/(fin-inicio+innerHeight*0.3)));
+    flechaPath.style.strokeDashoffset=(len*(1-prog)).toFixed(1);
+  }
+  addEventListener('scroll',dibujarFlecha,{passive:true});
+  dibujarFlecha();
+}
 </script>
 </body>
 </html>

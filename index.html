@@ -369,8 +369,31 @@ footer{position:relative;z-index:1;text-align:center;padding:2.5rem;font-size:.7
   .paso-der p{margin:0 auto}
   .paso-der .paso-foto{margin:0 auto}
   .paso-izq .paso-foto,.paso-der .paso-foto{transform:rotate(0);margin:0 auto}
+  .proceso-flecha{display:none}
   .paso-layout{flex-direction:column!important;gap:1.4rem}
   .paso-der .paso-foto-wrap{margin:0 auto}
+}
+/* ═══ Indicador de progreso móvil ═══ */
+.progreso-movil{display:none}
+@media(max-width:900px){
+  .progreso-movil{
+    display:block;position:absolute;top:0;left:28px;width:2px;height:100%;z-index:0;pointer-events:none;
+  }
+  .progreso-riel{position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(138,106,82,.12);border-radius:1px}
+  .progreso-fill{position:absolute;top:0;left:0;width:100%;height:0%;background:rgba(138,106,82,.35);border-radius:1px;transition:height .05s linear}
+  .progreso-nodo{
+    position:absolute;left:50%;width:10px;height:10px;border-radius:50%;
+    transform:translate(-50%,0);
+    background:rgba(138,106,82,.15);border:1.5px solid rgba(138,106,82,.25);
+    transition:background .4s,border-color .4s,box-shadow .4s;
+  }
+  .progreso-nodo.activo{background:rgba(138,106,82,.6);border-color:rgba(138,106,82,.7);box-shadow:0 0 8px rgba(138,106,82,.3)}
+  .progreso-nodo.fuego.activo{background:rgba(196,86,20,.6);border-color:rgba(196,86,20,.7);box-shadow:0 0 10px rgba(196,86,20,.3)}
+  .progreso-punta{
+    position:absolute;left:50%;bottom:0;transform:translate(-50%,4px);
+    width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;
+    border-top:8px solid rgba(138,106,82,.35);
+  }
 }
 </style>
 </head>
@@ -443,6 +466,12 @@ footer{position:relative;z-index:1;text-align:center;padding:2.5rem;font-size:.7
   <div style="text-align:center;padding:6rem 6vw 2rem;position:relative;z-index:1">
     <div class="eyebrow" style="color:#8A6A52;justify-content:center"><span style="color:#8A6A52">El proceso</span></div>
     <h2 style="color:#3E362C">Cómo nace cada <em style="color:#8A6A52">pieza</em></h2>
+  </div>
+
+  <div class="progreso-movil" id="progresoMovil">
+    <div class="progreso-riel"></div>
+    <div class="progreso-fill" id="progresoFill"></div>
+    <div class="progreso-punta"></div>
   </div>
 
   <div class="proceso-flecha" id="procesoFlecha">
@@ -871,36 +900,32 @@ addEventListener('load', pintar);
 addEventListener('resize', pintar);
 pintar();
 
-// Flecha del proceso: path generado desde posiciones reales de los pasos
+// Flecha desktop + indicador de progreso móvil
 (function(){
   var path = document.getElementById('flechaPath');
   var zona = document.getElementById('proceso');
-  var svg = document.getElementById('flechaSvg');
-  if(!path || !zona || !svg) return;
-  var pasoIds = ['paso-1','paso-2','paso-3','paso-4','paso-5','horno'];
+  var progresoFill = document.getElementById('progresoFill');
+  var progresoMovil = document.getElementById('progresoMovil');
+  if(!zona) return;
+  var pasoIds = ['paso-1','paso-2','paso-3','paso-4','paso-5'];
   var curLen = 0;
+  var nodos = [];
 
+  // === DESKTOP: serpentine SVG ===
   function generarPath(){
-    var zonaRect = zona.getBoundingClientRect();
+    if(!path || innerWidth <= 900) return;
     var zonaTop = zona.offsetTop;
     var zonaW = zona.offsetWidth;
+    var allIds = pasoIds.concat(['horno']);
     var puntos = [];
-    for(var i=0; i<pasoIds.length; i++){
-      var el = document.getElementById(pasoIds[i]);
+    for(var i=0; i<allIds.length; i++){
+      var el = document.getElementById(allIds[i]);
       if(!el) continue;
-      var r = el.getBoundingClientRect();
-      var cy = el.offsetTop + r.height/2 - zonaTop;
-      // Desktop: zigzag izq/der; Mobile: serpenteo suave al centro
-      var cx;
-      if(window.innerWidth > 900){
-        cx = (i % 2 === 0) ? zonaW * 0.22 : zonaW * 0.78;
-      } else {
-        cx = zonaW/2 + (i % 2 === 0 ? -zonaW*0.08 : zonaW*0.08);
-      }
+      var cy = el.offsetTop + el.offsetHeight/2 - zonaTop;
+      var cx = (i % 2 === 0) ? zonaW * 0.22 : zonaW * 0.78;
       puntos.push({x:cx, y:cy});
     }
     if(puntos.length < 2) return;
-    // Build smooth cubic bezier path
     var d = 'M' + puntos[0].x.toFixed(0) + ' ' + puntos[0].y.toFixed(0);
     for(var j=1; j<puntos.length; j++){
       var prev = puntos[j-1];
@@ -914,20 +939,61 @@ pintar();
     curLen = path.getTotalLength();
     path.style.strokeDasharray = curLen;
     path.style.strokeDashoffset = curLen;
-    dibujarFlecha();
   }
 
-  function dibujarFlecha(){
-    if(!curLen) return;
+  // === MÓVIL: nodos de progreso ===
+  function crearNodos(){
+    // Limpiar nodos previos
+    nodos.forEach(function(n){ if(n.parentNode) n.parentNode.removeChild(n); });
+    nodos = [];
+    if(!progresoMovil || innerWidth > 900) return;
+    var zonaTop = zona.offsetTop;
+    var zonaH = zona.offsetHeight;
+    for(var i=0; i<pasoIds.length; i++){
+      var el = document.getElementById(pasoIds[i]);
+      if(!el) continue;
+      var cy = el.offsetTop + el.offsetHeight/2 - zonaTop;
+      var nodo = document.createElement('div');
+      nodo.className = 'progreso-nodo' + (pasoIds[i] === 'paso-3' ? ' fuego' : '');
+      nodo.style.top = (cy / zonaH * 100) + '%';
+      progresoMovil.appendChild(nodo);
+      nodos.push({el:nodo, pasoId:pasoIds[i], pct:cy/zonaH});
+    }
+  }
+
+  function actualizar(){
     var rect = zona.getBoundingClientRect();
     var prog = Math.min(1, Math.max(0, -rect.top / (rect.height - innerHeight)));
-    path.style.strokeDashoffset = (curLen * (1 - prog)).toFixed(1);
+
+    // Desktop: dibujar serpentine
+    if(innerWidth > 900 && curLen && path){
+      path.style.strokeDashoffset = (curLen * (1 - prog)).toFixed(1);
+    }
+
+    // Móvil: fill + nodos
+    if(innerWidth <= 900 && progresoFill){
+      progresoFill.style.height = (prog * 100).toFixed(1) + '%';
+      var centroVP = scrollY + innerHeight / 2;
+      for(var i=0; i<nodos.length; i++){
+        var pasoEl = document.getElementById(nodos[i].pasoId);
+        if(!pasoEl) continue;
+        var pasoCenter = pasoEl.offsetTop + pasoEl.offsetHeight / 2;
+        var dist = Math.abs(centroVP - pasoCenter);
+        nodos[i].el.classList.toggle('activo', dist < innerHeight * 0.4);
+      }
+    }
   }
 
-  generarPath();
-  addEventListener('scroll', dibujarFlecha, {passive:true});
-  addEventListener('resize', generarPath);
-  addEventListener('load', generarPath);
+  function setup(){
+    generarPath();
+    crearNodos();
+    actualizar();
+  }
+
+  setup();
+  addEventListener('scroll', actualizar, {passive:true});
+  addEventListener('resize', setup);
+  addEventListener('load', setup);
 })();
 
 </script>

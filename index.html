@@ -325,7 +325,7 @@ footer{position:relative;z-index:1;text-align:center;padding:2.5rem;font-size:.7
 
 /* ═══ PROCESO: bloques verticales con zigzag ═══ */
 .proceso-zona{position:relative;z-index:1}
-.proceso-flecha{position:absolute;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;overflow:hidden}
+.proceso-flecha{position:absolute;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
 .proceso-flecha svg{width:100%;height:100%;overflow:visible}
 .flecha-linea{
   fill:none;stroke:rgba(138,106,82,.28);stroke-width:2;
@@ -916,10 +916,10 @@ pintar();
     if(!path || innerWidth <= 900) return;
     var zonaTop = zona.offsetTop;
     var zonaW = zona.offsetWidth;
-    var allIds = pasoIds.concat(['horno']);
+    var zonaH = zona.offsetHeight;
     var puntos = [];
-    for(var i=0; i<allIds.length; i++){
-      var el = document.getElementById(allIds[i]);
+    for(var i=0; i<pasoIds.length; i++){
+      var el = document.getElementById(pasoIds[i]);
       if(!el) continue;
       var cy = el.offsetTop + el.offsetHeight/2 - zonaTop;
       var cx = (i % 2 === 0) ? zonaW * 0.22 : zonaW * 0.78;
@@ -935,6 +935,9 @@ pintar();
          + ' ' + cur.x.toFixed(0) + ' ' + midY.toFixed(0)
          + ' ' + cur.x.toFixed(0) + ' ' + cur.y.toFixed(0);
     }
+    // Flecha final apuntando hacia abajo (al horno)
+    var last = puntos[puntos.length-1];
+    d += ' L' + (zonaW/2).toFixed(0) + ' ' + (zonaH - 20).toFixed(0);
     path.setAttribute('d', d);
     curLen = path.getTotalLength();
     path.style.strokeDasharray = curLen;

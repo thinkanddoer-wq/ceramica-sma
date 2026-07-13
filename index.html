@@ -748,46 +748,45 @@ addEventListener('scroll', () => {
 }, {passive:true});
 
 /* ═══ EL VIAJE: blanco → arena → rojo leve → arena → fuego → azul ═══ */
+/* Anclas recalculadas en CADA frame (offsetTop cambia al cargar imágenes) */
 const hornoEl = document.getElementById('horno');
 const primerHornoEl = document.getElementById('primerHorno');
 const origenEl = document.getElementById('origen');
 const modeladoEl = document.getElementById('pasoModelado');
 const esmaltadoEl = document.getElementById('pasoEsmaltado');
-function pSeccion(el){
+const esmaltesSecEl = document.getElementById('esmaltes');
+function pPos(el){
   const max = document.documentElement.scrollHeight - innerHeight;
   if(!el || max <= 0) return 0.3;
   const centro = el.offsetTop + el.offsetHeight/2 - innerHeight/2;
-  return Math.min(0.92, Math.max(0.02, centro / max));
+  return Math.min(0.95, Math.max(0.02, centro / max));
 }
 function construirParadas(){
-  const po = pSeccion(origenEl);       // "Aquí empieza todo"
-  const p2 = pSeccion(modeladoEl);     // paso 02
-  const ph = pSeccion(primerHornoEl);  // paso 03
-  const p4 = pSeccion(esmaltadoEl);    // paso 04
-  const pf = pSeccion(hornoEl);        // paso 06 / segunda quema
-  // Pico naranja encajonado: arena pura en paso02 y paso04
+  const po = pPos(origenEl);
+  const p2 = pPos(modeladoEl);
+  const ph = pPos(primerHornoEl);
+  const p4 = pPos(esmaltadoEl);
+  const pf = pPos(hornoEl);
+  const pe = pPos(esmaltesSecEl);
   const s=[];
-  s.push({p:0.00, c:[255,255,255]});              // blanco
-  s.push({p:Math.max(0.06,po-0.04), c:[240,235,225]});// transición
+  s.push({p:0.00, c:[255,255,255]});              // blanco (quiénes somos)
+  s.push({p:Math.max(0.04,po-0.04), c:[240,235,225]});// transición
   s.push({p:po, c:[201,193,176]});                // arena (origen)
-  s.push({p:p2, c:[201,193,176]});                // arena pura (paso 02)
-  s.push({p:(p2+ph)/2, c:[201,193,176]});         // arena entre 02 y 03
-  s.push({p:ph, c:[220,140,80]});                 // PICO naranja (paso 03)
-  s.push({p:(ph+p4)/2, c:[201,193,176]});         // arena entre 03 y 04
-  s.push({p:p4, c:[201,193,176]});                // arena pura (paso 04)
-  s.push({p:Math.max(p4+0.01,pf-0.04), c:[186,146,102]});// arena calentando
-  s.push({p:pf, c:[196,86,20]});                  // fuego pleno
-  s.push({p:Math.min(0.94,pf+0.10), c:[104,36,30]}); // brasa
-  s.push({p:Math.min(0.97,pf+0.20), c:[38,30,82]});  // azul templado
+  s.push({p:p2, c:[201,193,176]});                // arena (paso 02)
+  s.push({p:(p2+ph)/2, c:[201,193,176]});         // arena entre 02↔03
+  s.push({p:ph, c:[220,140,80]});                 // pico naranja (paso 03)
+  s.push({p:(ph+p4)/2, c:[201,193,176]});         // arena entre 03↔04
+  s.push({p:p4, c:[201,193,176]});                // arena (paso 04)
+  s.push({p:(p4+pf)/2, c:[186,146,102]});         // arena calentando
+  s.push({p:pf, c:[196,86,20]});                  // fuego pleno (horno)
+  s.push({p:(pf+pe)/2, c:[80,45,60]});            // brasa → azul rápido
+  s.push({p:pe, c:[30,32,78]});                   // azul templado (esmaltes)
   s.push({p:1.00, c:[20,28,77]});                 // azul noche
-  // Seguridad: forzar orden ascendente
   for(let i=1;i<s.length;i++) if(s[i].p<=s[i-1].p) s[i].p=s[i-1].p+0.003;
   return s;
 }
-let paradas = construirParadas();
-addEventListener('resize', ()=>{ paradas = construirParadas(); });
 const lerp=(a,b,t)=>a+(b-a)*t;
-function colorEn(t){
+function colorEn(paradas,t){
   for(let i=0;i<paradas.length-1;i++){
     const a=paradas[i], b=paradas[i+1];
     if(t>=a.p && t<=b.p){
@@ -821,20 +820,25 @@ function pintar(){
   ticking=false;
   const max=document.documentElement.scrollHeight-innerHeight;
   const t=Math.min(1,Math.max(0,scrollY/max));
-  const [r,g,b]=colorEn(t);
+
+  // Recalcular anclas en cada frame (offsetTop cambia al cargar imágenes)
+  const paradas=construirParadas();
+  const pf = pPos(hornoEl);
+  const ph = pPos(primerHornoEl);
+  const pe = pPos(esmaltesSecEl);
+
+  const [r,g,b]=colorEn(paradas,t);
   document.body.style.backgroundColor=`rgb(${r},${g},${b})`;
 
   // Doble pico de fuego: primer horno (corto) + horno final (pleno)
-  const pf = pSeccion(hornoEl);
-  const ph = pSeccion(primerHornoEl);
-  const intFinal=Math.max(0,1-Math.abs(t-pf)/0.14);
-  const intPrimer=Math.max(0,1-Math.abs(t-ph)/0.06); // campana angosta
-  const intCombinada=Math.max(intPrimer*0.5, intFinal);
+  const intFinal=Math.max(0,1-Math.abs(t-pf)/0.08);
+  const intPrimer=Math.max(0,1-Math.abs(t-ph)/0.04);
+  const intCombinada=Math.max(intPrimer*0.45, intFinal);
   fuego.style.opacity=(intCombinada*0.95).toFixed(2);
   chispasEl.style.opacity=(intCombinada*0.85).toFixed(2);
 
-  // Talavera: visible solo en la zona azul (después del horno)
-  const zonaAzul=Math.min(1,Math.max(0,(t-(pf+0.2))/0.2));
+  // Talavera: visible desde la sección esmaltes en adelante
+  const zonaAzul=Math.min(1,Math.max(0,(t-((pf+pe)/2))/(pe-(pf+pe)/2)));
   talavera.style.opacity=(0.07*zonaAzul).toFixed(3);
   azulejos.forEach(a=>a.style.opacity=(0.10*zonaAzul).toFixed(3));
 
@@ -853,9 +857,9 @@ function pintar(){
     tempPrimerEl.style.color=intPrimer>0.5?'#FFD98A':'var(--oro)';
   }
 
-  // Nav: texto oscuro en zonas claras (blanco+arena), crema a partir del primer pico rojo
+  // Nav: texto oscuro en zonas claras, crema desde antes del primer pico
   const navEl=document.querySelector('nav');
-  if(navEl) navEl.style.color = t<Math.max(0.20,ph-0.04) ? '#3E362C' : 'var(--crema)';
+  if(navEl) navEl.style.color = t<(ph-0.03) ? '#3E362C' : 'var(--crema)';
 }
 addEventListener('scroll',()=>{ if(!ticking){ticking=true;requestAnimationFrame(pintar);} },{passive:true});
 pintar();

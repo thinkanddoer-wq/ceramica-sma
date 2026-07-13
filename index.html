@@ -747,30 +747,36 @@ addEventListener('scroll', () => {
   azulejos.forEach((a,i) => { a.style.marginTop = `${y * (i%2? .03 : -.02)}px`; });
 }, {passive:true});
 
-/* ═══ EL VIAJE: blanco → arcilla → calor leve → arcilla → fuego → azul ═══ */
+/* ═══ EL VIAJE: blanco → arena → rojo leve → arena → fuego → azul ═══ */
 const hornoEl = document.getElementById('horno');
 const primerHornoEl = document.getElementById('primerHorno');
+const origenEl = document.getElementById('origen');
 function pSeccion(el){
   const max = document.documentElement.scrollHeight - innerHeight;
   if(!el || max <= 0) return 0.3;
   const centro = el.offsetTop + el.offsetHeight/2 - innerHeight/2;
-  return Math.min(0.9, Math.max(0.05, centro / max));
+  return Math.min(0.92, Math.max(0.02, centro / max));
 }
 function construirParadas(){
-  const pf = pSeccion(hornoEl);
-  const ph = pSeccion(primerHornoEl);
-  return [
-    {p:0.00, c:[255,255,255]},          // blanco (quiénes somos)
-    {p:0.10, c:[201,193,176]},           // arcilla (el origen)
-    {p:Math.max(0.14,ph-0.03), c:[201,193,176]}, // arcilla antes del primer horno
-    {p:ph, c:[220,140,80]},              // pico naranja (primer horno ~900°C)
-    {p:Math.min(ph+0.03,pf-0.06), c:[201,193,176]}, // vuelve a arcilla rápido
-    {p:Math.max(ph+0.06,pf-0.03), c:[186,146,102]}, // arcilla calentando
-    {p:pf, c:[196,86,20]},              // fuego pleno (segunda quema / horno)
-    {p:Math.min(0.95,pf+0.10), c:[104,36,30]},   // brasa apagándose
-    {p:Math.min(0.97,pf+0.22), c:[38,30,82]},    // azul templado
-    {p:1.00, c:[20,28,77]}              // azul noche (pieza terminada)
-  ];
+  const po = pSeccion(origenEl);  // "Aquí empieza todo"
+  const ph = pSeccion(primerHornoEl); // paso 03
+  const pf = pSeccion(hornoEl);  // paso 06 / segunda quema
+  // Garantizar orden: cada parada > la anterior
+  const s=[];
+  s.push({p:0.00, c:[255,255,255]});           // 0 blanco
+  s.push({p:Math.max(0.06,po-0.04), c:[240,235,225]});// transición a arena
+  s.push({p:po, c:[201,193,176]});             // 2 arena (origen)
+  s.push({p:Math.max(po+0.01,ph-0.03), c:[201,193,176]});// arena se mantiene
+  s.push({p:ph, c:[220,140,80]});              // 4 pico naranja (primer horno)
+  s.push({p:Math.min(ph+0.03,pf-0.08), c:[201,193,176]});// 5 vuelve a arena
+  s.push({p:Math.max(ph+0.05,pf-0.04), c:[186,146,102]});// 6 arena calentando
+  s.push({p:pf, c:[196,86,20]});               // 7 fuego pleno
+  s.push({p:Math.min(0.94,pf+0.10), c:[104,36,30]});  // 8 brasa
+  s.push({p:Math.min(0.97,pf+0.20), c:[38,30,82]});   // 9 azul templado
+  s.push({p:1.00, c:[20,28,77]});              // 10 azul noche
+  // Seguridad: forzar orden ascendente
+  for(let i=1;i<s.length;i++) if(s[i].p<=s[i-1].p) s[i].p=s[i-1].p+0.005;
+  return s;
 }
 let paradas = construirParadas();
 addEventListener('resize', ()=>{ paradas = construirParadas(); });
@@ -841,10 +847,9 @@ function pintar(){
     tempPrimerEl.style.color=intPrimer>0.5?'#FFD98A':'var(--oro)';
   }
 
-  // Nav: texto oscuro en la zona de barro claro, crema después
+  // Nav: texto oscuro en zonas claras (blanco+arena), crema a partir del primer pico rojo
   const navEl=document.querySelector('nav');
-  const ph = pSeccion(primerHornoEl);
-  if(navEl) navEl.style.color = t<Math.max(0.28,ph+0.06) ? '#3E362C' : 'var(--crema)';
+  if(navEl) navEl.style.color = t<Math.max(0.20,ph-0.04) ? '#3E362C' : 'var(--crema)';
 }
 addEventListener('scroll',()=>{ if(!ticking){ticking=true;requestAnimationFrame(pintar);} },{passive:true});
 pintar();

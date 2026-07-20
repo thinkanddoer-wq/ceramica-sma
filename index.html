@@ -303,17 +303,17 @@ footer{position:relative;z-index:1;text-align:center;padding:2.5rem;font-size:.7
 .paleta-pills{display:flex;flex-direction:column;align-items:center;width:100%}
 .pill{
   width:min(260px,100%);
-  padding:1.4rem 0 2.7rem;
+  padding:.95rem 0 2rem;
   border:none;border-radius:999px;cursor:pointer;
   background:var(--c);color:var(--tx);
-  font-family:'Jost',sans-serif;font-weight:300;font-size:.95rem;letter-spacing:.18em;
+  font-family:'Jost',sans-serif;font-weight:300;font-size:.85rem;letter-spacing:.18em;
   text-align:center;
-  margin-top:-2.2rem;
-  box-shadow:0 -16px 28px rgba(0,10,30,.38);
+  margin-top:-1.6rem;
+  box-shadow:0 -12px 22px rgba(0,10,30,.38);
   transition:transform .25s cubic-bezier(.2,.8,.2,1),box-shadow .25s;
 }
-.pill:first-child{margin-top:0;padding-top:1.9rem;box-shadow:0 10px 24px rgba(0,10,30,.3)}
-.pill:last-child{padding-bottom:1.9rem}
+.pill:first-child{margin-top:0;padding-top:1.3rem;box-shadow:0 8px 20px rgba(0,10,30,.3)}
+.pill:last-child{padding-bottom:1.3rem}
 .pill:hover{transform:translateY(-6px)}
 .pill.activo{box-shadow:0 -16px 28px rgba(0,10,30,.38),inset 0 0 0 2px var(--oro)}
 .pill:focus-visible{outline:2.5px solid var(--oro);outline-offset:2px}
@@ -591,18 +591,23 @@ footer{position:relative;z-index:1;text-align:center;padding:2.5rem;font-size:.7
 
     <!-- Derecha: paleta apilada + texto -->
     <div class="esmalte-der">
-      <div class="paleta-pills" role="group" aria-label="Paleta de azules">
-        <button class="pill" style="--c:#070A24;--tx:#D6D3CB">070A24</button>
-        <button class="pill" style="--c:#1A2438;--tx:#D6D3CB">1A2438</button>
-        <button class="pill" style="--c:#2F4B65;--tx:#D6D3CB">2F4B65</button>
-        <button class="pill" style="--c:#46766D;--tx:#D6D3CB">46766D</button>
-        <button class="pill" style="--c:#527687;--tx:#D6D3CB">527687</button>
-        <button class="pill" style="--c:#7E9CAB;--tx:#0A1220">7E9CAB</button>
-        <button class="pill" style="--c:#D6D3CB;--tx:#0A1220">D6D3CB</button>
+      <div class="paleta-pills" role="group" aria-label="Paleta de colores cerámicos">
+        <button class="pill" style="--c:#0A0E2E;--tx:#E5E6E2">0A0E2E</button>
+        <button class="pill" style="--c:#1E2A42;--tx:#E5E6E2">1E2A42</button>
+        <button class="pill" style="--c:#542224;--tx:#E5E6E2">542224</button>
+        <button class="pill" style="--c:#2E4A68;--tx:#E5E6E2">2E4A68</button>
+        <button class="pill" style="--c:#8F384E;--tx:#E5E6E2">8F384E</button>
+        <button class="pill" style="--c:#BB3028;--tx:#E5E6E2">BB3028</button>
+        <button class="pill" style="--c:#477A77;--tx:#E5E6E2">477A77</button>
+        <button class="pill" style="--c:#7D9250;--tx:#0A0E2E">7D9250</button>
+        <button class="pill" style="--c:#D27625;--tx:#0A0E2E">D27625</button>
+        <button class="pill" style="--c:#B5C8D8;--tx:#0A0E2E">B5C8D8</button>
+        <button class="pill" style="--c:#D4CABA;--tx:#0A0E2E">D4CABA</button>
+        <button class="pill" style="--c:#E5E6E2;--tx:#0A0E2E">E5E6E2</button>
       </div>
       <div class="esmalte-texto">
-        <p>Nuestros azules se aplican a mano y reaccionan distinto en cada quema. Toca un tono de la paleta — así se ve tu pieza antes de nacer.</p>
-        <div class="glaze-name" id="glazeName" style="margin-bottom:1.4rem">Esmalte: 1A2438</div>
+        <p>Cada esmalte se aplica a mano y reacciona distinto en cada quema. Toca un tono de la paleta — así se ve tu pieza antes de nacer.</p>
+        <div class="glaze-name" id="glazeName" style="margin-bottom:1.4rem">Esmalte: 8F384E</div>
         <a id="wa-esmalte" href="#" target="_blank" rel="noopener" class="btn btn-oro">Pedir con este esmalte</a>
       </div>
     </div>
